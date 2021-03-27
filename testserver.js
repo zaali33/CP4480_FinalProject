@@ -1,7 +1,7 @@
 let messageManager = new MessageManager()
 let userManager = new UserManager()
 
-connection = async () => new Promise(// eslint-disable-line no-undef
+connection = async () => new Promise(
     (resolve, reject) => {
         const connection = mysql.createConnection({
             host: 'localhost',
