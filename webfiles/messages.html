@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages Application</title>
+    <link rel="stylesheet" href="app.css" />
+</head>
+
+<body>
+    <h1 id="header">Welcome to Messages Application</h1>
+    <div class="container">
+        <div class="user-container">
+        </div>
+        <div class="messages-container">
+        </div>
+    </div>
+    <textarea placeholder="Send Message...." id="message-content"></textarea> <br />
+    <input type="submit" id="send-btn" value="Send" /> <br /><br />
+    <div id="admin-msg-container">
+        <h1 id="header">See all users messages</h1>
+        <div class="container">
+            <div class="admin-user-container">
+            </div>
+            <div class="admin-messages-container">
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src='main.js'></script>
+<script>
+    loadUsers() 
+    loadAdminScreen()
+    $("#send-btn").on('click', sendMessage)
+</script>

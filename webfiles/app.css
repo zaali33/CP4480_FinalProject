@@ -1,0 +1,158 @@
+:root{
+    --main-color: #fd93d5;
+    --bg-color: #0f123f;
+    --side-color: #2a0e63;
+    --pane-padding: 5px 42px;
+}
+body{
+    background: var(--bg-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+    text-align: center;
+    padding: 5px;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background-color: var(--side-color);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(0deg, var(--main-color), var(--main-color));
+    border-radius: 10px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(0deg, var(--main-color), var(--main-color));
+  }
+
+.login-container{
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    margin: auto;
+}
+
+input{
+    background-color: var(--side-color);
+    padding: 10px;
+    margin: 20px;
+    outline: none;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    transition: all 0.6s;
+    box-shadow: 0 0 10px rgba(255, 250, 250, 0.548);
+}
+
+input:focus{
+    border: 1px solid var(--main-color);
+}
+
+#login-btn, #send-btn{
+    background-color: var(--main-color);
+    width: 30%;
+    margin: auto;
+    transition: 0.6s;
+    color: white;
+    cursor: pointer;
+}
+
+#login-btn:hover, #send-btn:hover{
+    background-color: var(--bg-color);
+    border: 1px solid var(--main-color);
+}
+
+.container{
+    display: flex;
+    justify-content: space-between;
+}
+
+.user-container, .admin-user-container{
+    background-color: var(--side-color);
+    margin: 20px;
+    width: 40%;
+    padding: 20px;
+}
+
+.single-user{
+    margin: 20px;
+    border-radius: 10px;
+    padding: 20px;
+     box-shadow: 0 0 5px snow;
+     transition: 0.6s;
+     cursor: pointer;
+}
+
+.single-user:hover{
+    background-color: var(--side-color);
+    border: 1px solid var(--main-color);
+}
+
+.messages-container, .admin-messages-container{
+    width: 60%;
+    height: 400px;
+    background-color: var(--side-color);
+    border-radius: 5px;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+}
+.send-msg-container{
+    width: 100%;
+}
+
+.receive-msg-container{
+    width: 100%;
+}
+.send-msg{
+    background-color: var(--bg-color);
+    width: 30%;
+    margin: 10px;
+    border-radius: 30px;
+    border-top-left-radius: 0px;
+    padding: 10px;
+    float: left;
+}
+
+.receive-msg{
+    background-color: var(--main-color);
+    width: 30%;
+    margin: 10px;
+    border-radius: 30px;
+    padding: 10px;
+    border-top-right-radius: 0px;
+    float: right;
+}
+
+#message-content{
+    width: 40%;
+    margin: 20px;
+    padding: 10px;
+    background-color: var(--side-color);
+    outline: none;
+    border: none;
+    color: white;
+    height: 200px;
+    box-shadow: 0 0 10px snow;
+    border-radius: 5px;
+}
+
+.selected {
+    border: 3px solid var(--main-color);
+}
+
+.selected:hover{
+    border: 3px solid var(--main-color);
+}
+
+.sent-to {
+    background-color: #fd93d5;
+    color: #0f123f;
+    width: 150px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}

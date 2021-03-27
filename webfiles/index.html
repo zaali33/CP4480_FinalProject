@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages Application</title>
+    <link rel="stylesheet" href="app.css" />
+</head>
+<body>
+    <div class="login-container">
+        <h1>Welcome to Messages Application</h1>
+        <h2>Login to our application</h2>
+        <input type="text" id="username" placeholder="username" value="admin" name="username" />
+        <input type="password" id="password" placeholder="password"  value="admin123" name="password" />
+        <br />
+        <br />
+        <input type="submit" id="login-btn" name="login-btn" />
+    </div>
+</body>
+</html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src='main.js'></script>
+<script>
+    $("#login-btn").on('click', doLogin)
+</script>
