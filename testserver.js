@@ -1,7 +1,7 @@
 let messageManager = new MessageManager()
 let userManager = new UserManager()
 
-connection = async () => new Promise(// eslint-disable-line no-undef
+connection = async () => new Promise(
     (resolve, reject) => {
         const connection = mysql.createConnection({
             host: 'localhost',
@@ -19,7 +19,7 @@ connection = async () => new Promise(// eslint-disable-line no-undef
     }
 );
 
-query = async (conn, q, params) => new Promise(// eslint-disable-line no-undef
+query = async (conn, q, params) => new Promise(
     (resolve, reject) => {
         const handler = (error, result) => {
             if (error) {
