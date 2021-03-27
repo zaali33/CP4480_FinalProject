@@ -1,4 +1,4 @@
 #!/bin/bash
 
-cd /opt/msgapp
+cd /opt/msgapptest
 npm test
