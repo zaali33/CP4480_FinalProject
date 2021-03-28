@@ -1,3 +1,9 @@
+let mysql = require('mysql')
+
+const bcrypt = require('bcrypt')
+const { MessageManager } = require("./webfiles/message.js")
+const { UserManager } = require("./webfiles/user.js")
+
 let messageManager = new MessageManager()
 let userManager = new UserManager()
 

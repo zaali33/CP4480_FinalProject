@@ -2,8 +2,8 @@
 
 let mysql = require('mysql')
 
-const { MessageManager } = require("/var/www/msgapp/message.js")
-const { UserManager } = require("/var/www/msgapp/user.js")
+const { MessageManager } = require("./webfiles/message.js")
+const { UserManager } = require("./webfiles/user.js")
 
 let messageManager = new MessageManager()
 let userManager = new UserManager()
