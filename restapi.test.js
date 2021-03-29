@@ -7,7 +7,7 @@ const axios = require('axios')
 const { test, expect } = require('@jest/globals')
 
 const { MessageManager } = require("/var/www/msgapptest/message")
-const { UserManager } = require("./var/www/msgapptest/user")
+const { UserManager } = require("/var/www/msgapptest/user")
 
 let messageManager = new MessageManager()
 let userManager = new UserManager()
