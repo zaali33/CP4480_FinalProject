@@ -6,9 +6,23 @@
 const axios = require('axios')
 const { test, expect } = require('@jest/globals')
 
+const { MessageManager } = require("/var/www/msgapptest/message")
+const { UserManager } = require("./var/www/msgapptest/user")
+
+let messageManager = new MessageManager()
+let userManager = new UserManager()
+
+messageManager.setDbName('testmessage')
+userManager.setDbName('testmessage')
+
+//get rid of everything in the messages tables
+messageManager.delete()
+
+let basePath = "http://192.168.56.2:3006/api"
+
 test('Case 1: Login is successful', async () => {
     let res = await axios.post(
-        'http://192.168.56.2:3006/api/login',
+        `${basePath}/login`,
         {
             "username": 'admin',
             "password": 'admin123'
@@ -20,7 +34,7 @@ test('Case 1: Login is successful', async () => {
 
 test('Case 2: Login is unsuccessful', async () => {
     await axios.post(
-        'http://192.168.56.2:3006/api/login',
+        `${basePath}/login`,
         {
             "username": 'admin333',
             "password": 'admin123'
@@ -30,10 +44,10 @@ test('Case 2: Login is unsuccessful', async () => {
     })
 })
 
-test("Case 1: Valid token to load users", async () => {
+test("Case 1: Valid token to load users (should be 4 from database excluding the one loading)", async () => {
     //get the valid token
     let loginRes = await axios.post(
-        'http://192.168.56.2:3006/api/login',
+        `${basePath}/login`,
         {
             "username": 'admin',
             "password": 'admin123'
@@ -41,7 +55,7 @@ test("Case 1: Valid token to load users", async () => {
     )
     let token = loginRes.data.token
     let loadUsersRes = await axios.get(
-        'http://192.168.56.2:3006/api/loadUsers',
+        `${basePath}/users`,
         {
             headers: {
                 "Cookie": `user-token=${token}`
@@ -49,13 +63,15 @@ test("Case 1: Valid token to load users", async () => {
             withCredentials: true
         }
     )
+    let userDb = await userManager.loadUsers('admin')
+    expect(loadUsersRes.data.users.length).toBe(userDb.length)
     expect(loadUsersRes.status).toBe(200)
 })
 
 test("Case 2: Invalid token to load users", async () => {
     //get a valid token
     let loginRes = await axios.post(
-        'http://192.168.56.2:3006/api/login',
+        `${basePath}/login`,
         {
             "username": 'admin',
             "password": 'admin123'
@@ -63,8 +79,8 @@ test("Case 2: Invalid token to load users", async () => {
     )
     //make the token invalid
     let token = loginRes.data.token + "1234"
-     await axios.get(
-        'http://192.168.56.2:3006/api/loadUsers',
+    await axios.get(
+        `${basePath}/users`,
         {
             headers: {
                 "Cookie": `user-token=${token}`
@@ -84,7 +100,7 @@ test("Case 2: Invalid token to load users", async () => {
 test("Case 1: Invalid token to send messages", async () => {
     //get the token
     let loginCheck = await axios.post(
-        'http://192.168.56.2:3006/api/login',
+        `${basePath}/login`,
         {
             "username": 'admin',
             "password": 'admin123'
@@ -94,7 +110,7 @@ test("Case 1: Invalid token to send messages", async () => {
 
     // check sending messages
     await axios.post(
-        'http://192.168.56.2:3006/api/sendMessage',
+        `${basePath}/message`,
         {
             "receiver": 'aisha123',
             "message": 'Hello! This is wrong Case'
@@ -110,10 +126,10 @@ test("Case 1: Invalid token to send messages", async () => {
     })
 })
 
-test("Case 2: Valid token to send messages", async () => {
+test("Case 2: Valid token to send messages increases the count", async () => {
     //get the token
     let loginCheck = await axios.post(
-        'http://192.168.56.2:3006/api/login',
+        `${basePath}/login`,
         {
             "username": 'admin',
             "password": 'admin123'
@@ -121,9 +137,10 @@ test("Case 2: Valid token to send messages", async () => {
     )
     let token = loginCheck.data.token
 
+    let initialMessage = await messageManager.countMessage()
     // check sending messages
     let sendMessage = await axios.post(
-        'http://192.168.56.2:3006/api/sendMessage',
+        `${basePath}/message`,
         {
             "receiver": 'aisha',
             "message": 'Valid Case'
@@ -135,16 +152,18 @@ test("Case 2: Valid token to send messages", async () => {
             withCredentials: true
         }
     )
+    let afterMessage = await messageManager.countMessage()
+    expect(afterMessage).toBe(initialMessage + 1)
     expect(sendMessage.status).toBe(201)
     expect(sendMessage.data).toBe("Message sent and created")
 })
 
 
-// m not sure if this is the right way but i checked 500 internal error by deleting a column from database lol
-test("Case 3: Internal Server Error for send messages when token is valid", async () => {
+// raise 500 error with the valid token and user trying to send message to non existent user
+test("Case 3: Internal Database Error for sending message to a non existent user (foriegn key failed) when token is valid", async () => {
       //get the token
       let loginCheck = await axios.post(
-        'http://192.168.56.2:3006/api/login',
+        `${basePath}/login`,
         {
             "username": 'admin',
             "password": 'admin123'
@@ -154,9 +173,9 @@ test("Case 3: Internal Server Error for send messages when token is valid", asyn
 
     // send message
      await axios.post(
-        'http://192.168.56.2:3006/api/sendMessage',
+        `${basePath}/message`,
         {
-            "receiver": 'aisha',
+            "receiver": 'aisha44', //aisha44 doesnt exist
             "message": 'Internal Error'
         },
         {
@@ -177,7 +196,7 @@ test("Case 3: Internal Server Error for send messages when token is valid", asyn
 test("Case 1: Invalid token to view messages", async () => {
     //get the token
     let loginCheck = await axios.post(
-        'http://192.168.56.2:3006/api/login',
+        `${basePath}/login`,
         {
             "username": 'admin',
             "password": 'admin123'
@@ -186,11 +205,8 @@ test("Case 1: Invalid token to view messages", async () => {
     let token = loginCheck.data.token + "1234"
 
     // check viewing messages
-    await axios.post(
-        'http://192.168.56.2:3006/api/viewUserMessage',
-        {
-            "receiver": 'admin',
-        },
+    await axios.get(
+        `${basePath}/messages/admin`,
         {
             headers: {
                 "Cookie": `user-token=${token}`
@@ -203,22 +219,25 @@ test("Case 1: Invalid token to view messages", async () => {
 })
 
 
-test("Case 2: Valid token for view messages", async () => {
+test("Case 2: Valid token for viewing messages between two users", async () => {
     //get the token
+    //first user is the login user and the second user is the one passed in the body
     let loginCheck = await axios.post(
-        'http://192.168.56.2:3006/api/login',
+        `${basePath}/login`,
         {
             "username": 'admin',
             "password": 'admin123'
         }
     )
     let token = loginCheck.data.token
+    
+    let usermessages = await messageManager.getAllSenderMessages('hanan')
 
-    // check viewing messages
-    let viewUserMessage = await axios.post(
-        'http://192.168.56.2:3006/api/viewUserMessage',
+    let sendMessage = await axios.post(
+        `${basePath}/message`,
         {
-            "receiver": 'admin',
+            "message": "testing message from admin to hanan",
+            "receiver": "hanan"
         },
         {
             headers: {
@@ -227,12 +246,24 @@ test("Case 2: Valid token for view messages", async () => {
             withCredentials: true
         }
     )
+    // check viewing messages
+    let viewUserMessage = await axios.get(
+        `${basePath}/messages/hanan`,
+        {
+            headers: {
+                "Cookie": `user-token=${token}`
+            },
+            withCredentials: true
+        }
+    )
+    await messageManager.closeConnection()
+    expect(viewUserMessage.data.length).toBe(usermessages.length + 1)
     expect(viewUserMessage.status).toBe(200)
 })
 
 test("Case 1: Admin view all messages", async () => {
     let loginCheck = await axios.post(
-        'http://192.168.56.2:3006/api/login',
+        `${basePath}/login`,
         {
             "username": 'admin',
             "password": 'admin123'
@@ -240,7 +271,7 @@ test("Case 1: Admin view all messages", async () => {
     )
     let token = loginCheck.data.token
     let viewAllMessages = await axios.post(
-        'http://192.168.56.2:3006/api/adminViewAllMessages',
+        `${basePath}/adminmessages`,
         {
             "senderid": 'admin'
         },
@@ -257,7 +288,7 @@ test("Case 1: Admin view all messages", async () => {
 
 test("Case 2: Normal user view all messages", async () => {
     let loginCheck = await axios.post(
-        'http://192.168.56.2:3006/api/login',
+        `${basePath}/login`,
         {
             "username": 'zainab',
             "password": 'zainab123'
@@ -265,7 +296,7 @@ test("Case 2: Normal user view all messages", async () => {
     )
     let token = loginCheck.data.token
     let viewAllMessages = await axios.post(
-        'http://192.168.56.2:3006/api/adminViewAllMessages',
+        `${basePath}/adminmessages`,
         {
             "username": 'aisha'
         },
@@ -275,22 +306,26 @@ test("Case 2: Normal user view all messages", async () => {
             },
             withCredentials: true
         }
-    )
-    expect(viewAllMessages.status).toBe(401)
-    
+    ).catch(function(e) {
+        expect(e.response.status).toBe(401)
+    })
+
 })
 
 test("Case 1: Admin loading admin screen", async () => {
     let loginCheck = await axios.post(
-        'http://192.168.56.2:3006/api/login',
+        `${basePath}/login`,
         {
             "username": 'admin',
             "password": 'admin123'
         }
     )
     let token = loginCheck.data.token
+
+    let usermessages = await userManager.loadUsers('hanan')
+
     let adminUsers = await axios.get(
-        'http://192.168.56.2:3006/api/loadAdminScreen',
+        `${basePath}/adminusers`,
         {
             headers: {
                 "Cookie": `user-token=${token}`
@@ -298,15 +333,16 @@ test("Case 1: Admin loading admin screen", async () => {
             withCredentials: true
         }
     )
+    userManager.closeConnection()
     expect(adminUsers.status).toBe(200)
     //load all 5 users except the admin himself
-    expect(adminUsers.data.length).toBe(4)
+    expect(adminUsers.data.length).toBe(usermessages.length + 1)
 })
 
 
 test("Case 2: Normal user loading admin screen", async () => {
     let loginCheck = await axios.post(
-        'http://192.168.56.2:3006/api/login',
+        `${basePath}/login`,
         {
             "username": 'zainab',
             "password": 'zainab123'
@@ -315,14 +351,15 @@ test("Case 2: Normal user loading admin screen", async () => {
     let token = loginCheck.data.token
     console.log(token)
     let viewAllMessages = await axios.get(
-        'http://192.168.56.2:3006/api/loadAdminScreen',
+        `${basePath}/adminusers`,
         {
             headers: {
                 "Cookie": `user-token=${token}`
             },
             withCredentials: true
         }
-    )
-    expect(viewAllMessages.data).toBe('Only for admin')
-    expect(viewAllMessages.status).toBe(401)
+    ).catch(function(e) {
+        expect(e.response.data).toBe('Only for admin')
+        expect(e.response.status).toBe(401)
+    })  
 })

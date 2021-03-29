@@ -1,5 +1,8 @@
 {
   "name": "cp4480project",
+  "jest": {
+    "testEnvironment": "node"
+  },
   "version": "1.0.0",
   "main": "login.js",
   "scripts": {

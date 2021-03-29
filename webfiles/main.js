@@ -7,10 +7,9 @@ function viewUserMessages(className, username) {
     className.classList.add('selected')
     selectedUser = username
     $.ajax({// eslint-disable-line no-undef
-        url: "/api/viewUserMessage",
-        method: "POST",
+        url: `/api/messages/${username}`,
+        method: "GET",
         contentType: 'application/json',
-        data: JSON.stringify({ username: username }),
         success: function (result) {
             let msgContainer = document.getElementsByClassName('messages-container')[0]
             msgContainer.innerHTML = ""
@@ -48,7 +47,7 @@ function sendMessage() {// eslint-disable-line  no-unused-vars
         let message = document.getElementById('message-content').value
         if(message !== "") {
             $.ajax({// eslint-disable-line  no-undef
-                url: "/api/sendMessage",
+                url: "/api/message",
                 method: "POST",
                 contentType: 'application/json',
                 data: JSON.stringify({ receiver: selectedUser, message: message }),
@@ -93,11 +92,11 @@ function loadUsers() {// eslint-disable-line  no-unused-vars
     let userContainer = document.getElementsByClassName('user-container')[0]
     userContainer.innerHTML = ""
     $.ajax({// eslint-disable-line  no-undef
-        url: "/api/loadUsers",
+        url: "/api/users",
         method: "get",
         contentType: "application/json",
         success: function (result) {
-            result.forEach(user => {
+            result.users.forEach(user => {
                 userContainer.innerHTML += `
                     <div class="single-user" onclick="viewUserMessages(this, '${user.username}')">
                         <div class="user-details">
@@ -119,7 +118,7 @@ function loadAdminScreen() {
     let adminContainer = document.getElementsByClassName('admin-user-container')[0]
     adminContainer.innerHTML = ""
     $.ajax({
-        url: "/api/loadAdminScreen",
+        url: "/api/adminusers",
         method: "get",
         contentType: "application/json",
         success: function (result) {
@@ -151,7 +150,7 @@ function adminViewAllMessages(className, username) {
     className.classList.add('selected')
     selectedUser = username
     $.ajax({
-        url: "/api/adminViewAllMessages",
+        url: "/api/adminmessages",
         method: "POST",
         contentType: 'application/json',
         data: JSON.stringify({ username: username }),

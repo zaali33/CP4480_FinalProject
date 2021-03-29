@@ -1,12 +1,15 @@
-/*eslint no-undefined: "error"*/
-
 let mysql = require('mysql')
 
-const { MessageManager } = require("/var/www/msgapp/message.js")
-const { UserManager } = require("/var/www/msgapp/user.js")
+const { MessageManager } = require("/var/www/msgapp/message")
+const { UserManager } = require("/var/www/msgapp/user")
+
+const bcrypt = require('bcrypt');
 
 let messageManager = new MessageManager()
 let userManager = new UserManager()
+
+messageManager.setDbName('message')
+userManager.setDbName('message')
 
 connection = async () => new Promise(// eslint-disable-line no-undef
     (resolve, reject) => {
@@ -14,7 +17,7 @@ connection = async () => new Promise(// eslint-disable-line no-undef
             host: 'localhost',
             user: 'root',
             password: 'password',
-            database: 'testmessage'
+            database: 'message'
         });
         connection.connect(error => {
             if (error) {
@@ -62,7 +65,7 @@ const authenticateUser = async (username, password) => {
 let express = require('express')
 let app = express()
 app.use(express.json())
-app.use(express.static('webfiles'))
+//app.use(express.static('webfiles'))
 
 let jwt = require('jsonwebtoken')
 let cookieParser = require('cookie-parser')
@@ -93,8 +96,8 @@ app.post('/api/login', async (req, res) => {
     res.send("not authorized")
 })
 
-app.post('/api/viewUserMessage', async (req, res) => {
-    let receiverid = req.body.username
+app.get('/api/messages/:id', async (req, res) => {
+    let receiverid = req.params.id
     try {
         let token = req.cookies['user-token']
         let user = jwt.verify(token, appSecret)
@@ -113,7 +116,7 @@ app.post('/api/viewUserMessage', async (req, res) => {
     }
 })
 
-app.post('/api/sendMessage', async (req, res) => {
+app.post('/api/message', async (req, res) => {
     let receiverid = req.body.receiver
     let message = req.body.message
     try {
@@ -135,14 +138,14 @@ app.post('/api/sendMessage', async (req, res) => {
     }
 })
 
-app.get('/api/loadUsers', async (req, res) => {
+app.get('/api/users', async (req, res) => {
     try {
         let token = req.cookies['user-token']
         let senderid = jwt.verify(token, appSecret)
         try {
             let users = await userManager.loadUsers(senderid.username)
             res.status(200)
-            res.send(users)
+            res.send({users: users})
         }
         catch (e) {
             res.status(500)
@@ -156,7 +159,7 @@ app.get('/api/loadUsers', async (req, res) => {
 })
 
 // rest api for loadAdminScreen
-app.get('/api/loadAdminScreen', async (req, res) => {
+app.get('/api/adminusers', async (req, res) => {
     try {
         let token = req.cookies['user-token']
         let user = jwt.verify(token, appSecret)
@@ -184,7 +187,7 @@ app.get('/api/loadAdminScreen', async (req, res) => {
 })
 
 // rest api for admin seeing all messages
-app.post('/api/adminViewAllMessages', async (req, res) => {
+app.post('/api/adminmessages', async (req, res) => {
     let senderid = req.body.username
     try {
         let token = req.cookies['user-token']
@@ -192,6 +195,7 @@ app.post('/api/adminViewAllMessages', async (req, res) => {
         try {
             if(user.username === "admin") {
                 let messages = await messageManager.getAllSenderMessages(senderid)
+                console.log("admin able to see")
                 res.status(200)
                 res.send(messages)
             }
@@ -212,5 +216,5 @@ app.post('/api/adminViewAllMessages', async (req, res) => {
 
 
 app.listen(3005, () => {
-    logMessage("The messages application is running")
+    logMessage("The messages application is running on main port")
 })

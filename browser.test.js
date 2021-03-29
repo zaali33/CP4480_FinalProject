@@ -23,7 +23,6 @@ test("Test Case 1 Valid token", async () => {
     expect(result).toBe("http://192.168.56.2:3006/messages.html")
 })
 
-
 test("Test Case 2 InValid Token", async () => {
     const browser = await puppeteer.launch({ headless: false })
     const page = await browser.newPage()
@@ -37,9 +36,4 @@ test("Test Case 2 InValid Token", async () => {
     await page.waitForNavigation()
     let result = await page.url()
     expect(result).toBe("http://192.168.56.2:3006/")
-},10000)
-
-
-test("Test Case 3 View Messages", async () => {
-    
 })
