@@ -7,7 +7,7 @@ const axios = require('axios')
 const { test, expect } = require('@jest/globals')
 
 const { MessageManager } = require("/var/www/msgapptest/message")
-const { UserManager } = require("./var/www/msgapptest/user")
+const { UserManager } = require("/var/www/msgapptest/user")
 
 let messageManager = new MessageManager()
 let userManager = new UserManager()
@@ -322,7 +322,7 @@ test("Case 1: Admin loading admin screen", async () => {
     )
     let token = loginCheck.data.token
 
-    let usermessages = await userManager.loadUsers('hanan')
+    let usermessages = await userManager.loadUsers('admin')
 
     let adminUsers = await axios.get(
         `${basePath}/adminusers`,
@@ -336,7 +336,7 @@ test("Case 1: Admin loading admin screen", async () => {
     userManager.closeConnection()
     expect(adminUsers.status).toBe(200)
     //load all 5 users except the admin himself
-    expect(adminUsers.data.length).toBe(usermessages.length + 1)
+    expect(adminUsers.data.length).toBe(usermessages.length)
 })
 
 
