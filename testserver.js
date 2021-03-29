@@ -1,9 +1,15 @@
 let mysql = require('mysql')
 
+<<<<<<< HEAD
 const { MessageManager } = require("/var/www/msgapptest/message")
 const { UserManager } = require("/var/www/msgapptest/user")
 
 const bcrypt = require('bcrypt');
+=======
+const bcrypt = require('bcrypt')
+const { MessageManager } = require("./webfiles/message.js")
+const { UserManager } = require("./webfiles/user.js")
+>>>>>>> c4ebb5594dd840fee563394891aeeedc0986d502
 
 let messageManager = new MessageManager()
 let userManager = new UserManager()

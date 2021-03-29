@@ -56,7 +56,7 @@ function sendMessage() {// eslint-disable-line  no-unused-vars
                     document.getElementById('message-content').value = ""
                 },
                 error: function (j, t, e) {// eslint-disable-line  no-unused-vars
-                    alert("Internal error occured")
+                   // alert("Internal error occured")
                     window.location.href = "/messages.html"
                 }
             })
@@ -82,7 +82,7 @@ function doLogin() {// eslint-disable-line  no-unused-vars
             window.location.href = "/messages.html"
         },
         error: function (j, t, e) {// eslint-disable-line  no-unused-vars
-            alert("Invalid credentials")
+            //alert("Invalid credentials")
             window.location.href = "/"
         }
     })
@@ -107,7 +107,7 @@ function loadUsers() {// eslint-disable-line  no-unused-vars
             })
         },
         error: function (j, t, e) {// eslint-disable-line  no-unused-vars
-            alert("Invalid credentials")
+           // alert("Invalid credentials")
             window.location.href = "/"
         }
     })
