@@ -181,7 +181,7 @@ function adminViewAllMessages(className, username) {
 function logout() {
     $.ajax({
         url: "/api/logout",
-        method: "post",
+        method: "POST",
         success: function(result) {
             window.location.href = '/'
         },
@@ -194,7 +194,7 @@ function logout() {
 function start() {// eslint-disable-line  no-unused-vars
     $.ajax({// eslint-disable-line  no-undef
         url: "/api/start",
-        method: "get",
+        method: "GET",
         success: function (result) {
             console.log(result)
         },
