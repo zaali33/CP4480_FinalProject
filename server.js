@@ -214,6 +214,11 @@ app.post('/api/adminmessages', async (req, res) => {
     }
 })
 
+app.post('/api/logout', (req, res) => {
+    res.cookie('user-token', '', { expires: new Date(Date.now() - 1) })
+    res.send('ok')
+    res.status(200)
+})
 
 app.listen(3005, () => {
     logMessage("The messages application is running on main port")

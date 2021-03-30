@@ -178,6 +178,19 @@ function adminViewAllMessages(className, username) {
     })
 }
 
+function logout() {
+    $.ajax({
+        url: "/api/logout",
+        method: "post",
+        success: function(result) {
+            window.location.href = '/'
+        },
+        error: function(x, t, s) {
+            window.location.href = '/'
+        }
+    })
+}
+
 function start() {// eslint-disable-line  no-unused-vars
     $.ajax({// eslint-disable-line  no-undef
         url: "/api/start",

@@ -363,3 +363,26 @@ test("Case 2: Normal user loading admin screen", async () => {
         expect(e.response.status).toBe(401)
     })  
 })
+
+test("Logout test case", async() => {
+    let loginCheck = await axios.post(
+        `${basePath}/login`,
+        {
+            "username": 'zainab',
+            "password": 'zainab123'
+        }
+    )
+    let token = loginCheck.data.token
+
+    let logoutRes= await axios.post(
+        `${basePath}/logout`,
+        {
+            headers: {
+                "Cookie": `user-token=${token}`
+            },
+            withCredentials: true
+        }   
+    )
+    expect(logoutRes.data).toBe("ok")
+    expect(logoutRes.status).toBe(200)
+})
