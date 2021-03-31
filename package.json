@@ -6,7 +6,7 @@
   "version": "1.0.0",
   "main": "login.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --forceExit",
     "start": "node server.js"
   },
   "author": "",

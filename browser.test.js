@@ -3,16 +3,28 @@
 * @jest-environment node
 
 */
-const ppConsole =  require ('puppeteer-console')
-
 const puppeteer = require('puppeteer')
 
-const { test, expect, describe } = require("@jest/globals");
+const { test, expect } = require("@jest/globals");
 
-test("Test Case 1 Valid token", async () => {
-    const browser = await puppeteer.launch({ headless: false })
+const { MessageManager } = require("/var/www/msgapptest/message")
+const { UserManager } = require("/var/www/msgapptest/user")
+
+const bcrypt = require('bcrypt');
+
+let messageManager = new MessageManager()
+let userManager = new UserManager()
+
+messageManager.setDbName('testmessage')
+userManager.setDbName('testmessage')
+messageManager.delete()
+
+let basePath = "http://192.168.56.2:81/"
+
+test("Login success takes to messages.html page", async () => {
+    const browser = await puppeteer.launch({ headless: true })
     const page = await browser.newPage()
-    await page.goto("http://192.168.56.2:3006/")
+    await page.goto(basePath)
     await page.focus('input[name="username"]')
     await page.keyboard.type('admin')
     await page.focus('input[name="password"]')
@@ -21,15 +33,13 @@ test("Test Case 1 Valid token", async () => {
     await loginButton.click()
     await page.waitForNavigation()
     let result = await page.url()
-    expect(result).toBe("http://192.168.56.2:3006/messages.html")
-    browser.close();
+    expect(result).toBe(`${basePath}messages.html`)
 })
 
-
-test("Test Case 2 InValid Token", async () => {
-    const browser = await puppeteer.launch({ headless: false })
+test("Login unsuccessful takes to the login page", async () => {
+    const browser = await puppeteer.launch({ headless: true })
     const page = await browser.newPage()
-    await page.goto("http://192.168.56.2:3006/")
+    await page.goto(basePath)
     await page.focus('input[name="username"]')
     await page.keyboard.type('aisha')
     await page.focus('input[name="password"]')
@@ -38,44 +48,131 @@ test("Test Case 2 InValid Token", async () => {
     await loginButton.click()
     await page.waitForNavigation()
     let result = await page.url()
-    expect(result).toBe("http://192.168.56.2:3006/")
-    browser.close();
+    expect(result).toBe(basePath)
+})
+
+test("Normal user loading other users see all users except him/herself", async () => {
+    const browser = await puppeteer.launch({ headless: true })
+    const page = await browser.newPage()
+    await page.goto(basePath)
+    await page.focus('input[name="username"]')
+    await page.keyboard.type('aisha')
+    await page.focus('input[name="password"]')
+    await page.keyboard.type("aisha123")
+    let loginButton = await page.$('input[name="login-btn"]')
+    await loginButton.click()
+    await page.waitForNavigation()
+    let result = await page.url()
+    await page.goto(result)
+   // const userContainer = await page.$$('.single-user'); 
+
+    const userContainer = await page.$$('.single-user'); 
+
+    let users = [];
+    for(let i = 0; i < userContainer.length; i++){
+        let user = await (await userContainer[i].getProperty('innerText')).jsonValue();
+        users.push(user); 
+    }
+    console.log(users)
+     await browser.close()
+     expect(users).toStrictEqual(['admin', 'hanan', 'sarah','zainab']) 
+
 })
 
 
-// test("Test Case 3 send messages", async () => {
-//     const browser = await puppeteer.launch({ headless: false })
-//     const page = await browser.newPage()
-//     await page.goto("http://localhost:3006/")
-//     await page.focus('input[name="username"]')
-//     await page.keyboard.type('aisha')
-//     await page.focus('input[name="password"]')
-//     await page.keyboard.type("aisha123")
-//     let loginButton = await page.$('input[name="login-btn"]')
-//     await loginButton.click()
-//     await page.waitForNavigation()
-//     let result = await page.url()
-//     await page.goto(result)
-//     await page.evaluate(() => {
-//         let elements = document.getElementsByClassName('single-user');
-//         elements[0].click();
-//     });
-//     await page.evaluate(function() {           
-//         document.querySelector('textarea#message-content').value = 'hello hanan!!!!'
-//       })
-//     let sendButton = await page.$('input[name="send-btn"]')
-//     sendButton.click()
+test("Browser testing for sending messages shows the message in the messages container", async () => {
+    const browser = await puppeteer.launch({ headless: true })
+    const page = await browser.newPage()
+    await page.goto(basePath)
+    await page.focus('input[name="username"]')
+    await page.keyboard.type('aisha')
+    await page.focus('input[name="password"]')
+    await page.keyboard.type("aisha123")
+    let loginButton = await page.$('input[name="login-btn"]')
+    await loginButton.click()
+    await page.waitForNavigation()
+    let result = await page.url()
+    await page.goto(result)
+    await page.waitForSelector('.single-user')
+    await page.evaluate(async () => {
+        let elements = await document.getElementsByClassName('single-user');
+        await elements[1].click();
+    })
+    await page.evaluate(() => {
+        document.querySelector('textarea#message-content').value = 'hello hanan!!!!'
+    })
+    await page.evaluate( async() => {
+        let sendbtn = await document.getElementById('send-btn');
+        await sendbtn.click();
+    });
+    await page.waitForSelector('.send-msg')
+    const sendmsg = await page.$$('.send-msg'); 
+    const sentmsg = await (await sendmsg[0].getProperty('innerText')).jsonValue()
+    await browser.close()
+    expect(sentmsg).toEqual('hello hanan!!!!')
+})
 
-//     // await Promise.race([
-//     //     page.waitForNavigation({waitUntil: "networkidle0"}),
-//     //     page.waitForSelector('.send-msg')
+test("Browser test for admin messages, admin can see all the messages including the one that was just sent", async() => {
+    const browser = await puppeteer.launch({ headless: true })
+    const page = await browser.newPage()
+    await page.goto(basePath)
+    await page.focus('input[name="username"]')
+    await page.keyboard.type('admin')
+    await page.focus('input[name="password"]')
+    await page.keyboard.type("admin123")
+    let loginButton = await page.$('input[name="login-btn"]')
+    await loginButton.click()
+    await page.waitForNavigation()
+    let result = await page.url()
+    await page.goto(result)
+    await page.waitForSelector('.single-user')
+    await page.evaluate( async() => {
+        let elements = document.getElementsByClassName('single-user');
+        await elements[4].click();
+    });
+    await page.waitForSelector('.sent-to')
+    const sentTo = await page.$$('.sent-to'); 
+    const receiver = await (await sentTo[0].getProperty('innerText')).jsonValue()
+    await browser.close()
+    expect(receiver).toEqual('to hanan')
+})
 
-//     // ])
+test("Browser test for normal user loading admin screen", async () => {
+    const browser = await puppeteer.launch({ headless: true })
+    const page = await browser.newPage()
+    await page.goto(basePath)
+    await page.focus('input[name="username"]')
+    await page.keyboard.type('hanan')
+    await page.focus('input[name="password"]')
+    await page.keyboard.type("hanan123")
+    let loginButton = await page.$('input[name="login-btn"]')
+    await loginButton.click()
+    await page.waitForNavigation()
+    let result = await page.url()
+    await page.goto(result)
+    let adminContent = "testing"
+    adminContent = await page.evaluate(() => document.getElementsByClassName('admin-messages-container')[0].innerText)
+    await browser.close()
+    expect(adminContent).toBe("")
+})
 
-//     let expectedResult = ''
-//     await page.evaluate((expectedResult) => {
-//         expectedResult = document.getElementsByClassName('send-msg')[0].innerHTML
-//     }, expectedResult)
-//     expect(expectedResult).toBe('hello hanan!!!!')
-
-// })
+test("Browser test checking logout", async () => {
+    const browser = await puppeteer.launch({ headless: true })
+    const page = await browser.newPage()
+    await page.goto(basePath)
+    await page.focus('input[name="username"]')
+    await page.keyboard.type('hanan')
+    await page.focus('input[name="password"]')
+    await page.keyboard.type("hanan123")
+    let loginButton = await page.$('input[name="login-btn"]')
+    await loginButton.click()
+    await page.waitForNavigation()
+    let result = await page.url()
+    await page.goto(result)
+    let logoutButton = await page.$('input[name="logout-btn"]')
+    await logoutButton.click()
+    await page.waitForNavigation()
+    let result2 = await page.url()
+    await browser.close()
+    expect(result2).toBe(basePath)
+})
