@@ -44,7 +44,7 @@ function viewUserMessages(className, username) {
 
 function sendMessage() {// eslint-disable-line  no-unused-vars
     if (selectedUser) {
-        let message = document.getElementById('message-content').value
+        let message = document.getElementById('message-content').value + "222"
         if(message !== "") {
             $.ajax({// eslint-disable-line  no-undef
                 url: "/api/message",
