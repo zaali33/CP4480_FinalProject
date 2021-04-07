@@ -46,7 +46,6 @@ class MessageManager {
                 resolve(result);
             }
             conn.query(q, params, handler);
-            conn.query(q, params, handler);
         }
     );
 
