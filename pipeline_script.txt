@@ -1,0 +1,40 @@
+pipeline {
+    agent any
+    stages {
+        stage('Cloning git') {
+            steps {
+                git credentialsId: 'aaccd009-391b-44f4-b241-234981c35c4c', url: 'https://github.com/zaali33/CP4480_FinalProject.git', branch: 'master'
+            }
+        }
+        stage('Deploying testing application on nginx') {
+            steps {
+                sh 'sudo cp -r webfiles/. /var/www/msgapptest/.'
+                sh 'sudo cp testserver.js /opt/msgapptest/.'
+                sh 'sudo cp package.json /opt/msgapptest/.'
+                sh 'sudo cp package-lock.json /opt/msgapptest/.'
+                sh 'sudo systemctl restart nginx'
+                sh 'sudo systemctl start msgapptest'
+                sh 'sudo cp restapi.test.js /opt/msgapptest/.'
+                sh 'sudo cp browser.test.js /opt/msgapptest/.'
+            }
+        }
+        stage('Running eslint, rest api and browser test') {
+            steps {
+                sh 'sudo cp runTest.sh /opt/msgapptest/.'
+                sh 'bash runTest.sh'
+            }
+        }
+        stage('Deploying final on nginx') {
+            steps {
+                sh 'sudo cp -r webfiles/. /var/www/msgapp/.'
+                sh 'sudo cp server.js /opt/msgapp/.'
+                sh 'sudo cp package.json /opt/msgapp/.'
+                sh 'sudo cp package-lock.json /opt/msgapp/.'
+                sh 'sudo systemctl restart nginx'
+                sh 'sudo systemctl start msgapp'
+                sh 'sudo cp restapi.test.js /opt/msgapp/.'
+                sh 'sudo cp runTest.sh /opt/msgapp/.'
+            }
+        }
+    }
+}
