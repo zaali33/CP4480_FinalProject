@@ -8,8 +8,6 @@ const bcrypt = require('bcrypt');// eslint-disable-line  no-undef
 let messageManager = new MessageManager()
 let userManager = new UserManager()
 
-let port = 3000
-
 messageManager.setDbName('message')
 userManager.setDbName('message')
 
