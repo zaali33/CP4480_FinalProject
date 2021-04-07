@@ -124,7 +124,6 @@ app.post('/api/message', async (req, res) => {
         let senderid = jwt.verify(token, appSecret)
         try {
             await messageManager.sendMessage({ message, receiverid, senderid: senderid.username })
-            await messageManager.sendMessage({ message, receiverid, senderid: senderid.username })
             res.status(201)
             res.send("Message sent and created")
         }
