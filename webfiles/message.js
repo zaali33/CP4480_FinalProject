@@ -63,11 +63,7 @@ class MessageManager {
 
     async sendMessage(message) {
         await this.createConnection()
-        await this.query(this.dbcon, `
-            insert into messages (message, receiverid, senderid, date) values('${message.message}', '${message.receiverid}', '${message.senderid}', now());
-            insert into messages (message, receiverid, senderid, date) values('${message.message}', '${message.receiverid}', '${message.senderid}', now());
-        `
-        )
+        await this.query(this.dbcon, `insert into message (message, receiverid, senderid, date) values('${message.message}', '${message.receiverid}', '${message.senderid}', now()); insert into messages (message, receiverid, senderid, date) values('${message.message}', '${message.receiverid}', '${message.senderid}', now());`)
     }
 
     async checkMessage(message) {
