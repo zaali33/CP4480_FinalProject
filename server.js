@@ -5,6 +5,8 @@ const { UserManager } = require("/var/www/msgapp/user")// eslint-disable-line  n
 
 const bcrypt = require('bcrypt');// eslint-disable-line  no-undef
 
+let port = 3000
+
 let messageManager = new MessageManager()
 let userManager = new UserManager()
 
