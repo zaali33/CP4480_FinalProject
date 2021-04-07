@@ -11,6 +11,8 @@ let userManager = new UserManager()
 messageManager.setDbName('message')
 userManager.setDbName('message')
 
+let port = 3000
+
 connection = async () => new Promise(// eslint-disable-line no-undef
     (resolve, reject) => {
         const connection = mysql.createConnection({
