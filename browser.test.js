@@ -34,7 +34,7 @@ test("Login success takes to messages.html page", async () => {
     await page.waitForNavigation()
     let result = await page.url()
     expect(result).toBe(`${basePath}messages.html`)
-})
+}, 30000)
 
 test("Login unsuccessful takes to the login page", async () => {
     const browser = await puppeteer.launch({ headless: true })
@@ -49,7 +49,7 @@ test("Login unsuccessful takes to the login page", async () => {
     await page.waitForNavigation()
     let result = await page.url()
     expect(result).toBe(basePath)
-})
+}, 30000)
 
 test("Normal user loading other users see all users except him/herself", async () => {
     const browser = await puppeteer.launch({ headless: true })
@@ -77,7 +77,7 @@ test("Normal user loading other users see all users except him/herself", async (
      await browser.close()
      expect(users).toStrictEqual(['admin', 'hanan', 'sarah','zainab']) 
 
-})
+}, 30000)
 
 
 test("Browser testing for sending messages shows the message in the messages container", async () => {
@@ -110,7 +110,7 @@ test("Browser testing for sending messages shows the message in the messages con
     const sentmsg = await (await sendmsg[0].getProperty('innerText')).jsonValue()
     await browser.close()
     expect(sentmsg).toEqual('hello hanan!!!!')
-})
+}, 30000)
 
 test("Browser test for admin messages, admin can see all the messages including the one that was just sent", async() => {
     const browser = await puppeteer.launch({ headless: true })
@@ -135,7 +135,7 @@ test("Browser test for admin messages, admin can see all the messages including 
     const receiver = await (await sentTo[0].getProperty('innerText')).jsonValue()
     await browser.close()
     expect(receiver).toEqual('to hanan')
-})
+}, 30000)
 
 test("Browser test for normal user loading admin screen", async () => {
     const browser = await puppeteer.launch({ headless: true })
@@ -154,7 +154,7 @@ test("Browser test for normal user loading admin screen", async () => {
     adminContent = await page.evaluate(() => document.getElementsByClassName('admin-messages-container')[0].innerText)
     await browser.close()
     expect(adminContent).toBe("")
-})
+}, 30000)
 
 test("Browser test checking logout", async () => {
     const browser = await puppeteer.launch({ headless: true })
@@ -175,4 +175,4 @@ test("Browser test checking logout", async () => {
     let result2 = await page.url()
     await browser.close()
     expect(result2).toBe(basePath)
-})
+}, 30000)
