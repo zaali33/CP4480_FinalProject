@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd /opt/msgapptest
+cd /opt/msgapp
 eslint server.js
 
 cd /var/www/msgapp
