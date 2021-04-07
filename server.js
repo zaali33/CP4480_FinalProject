@@ -1,9 +1,9 @@
-let mysql = require('mysql')
+let mysql = require('mysql')// eslint-disable-line  no-undef
 
-const { MessageManager } = require("/var/www/msgapp/message")
-const { UserManager } = require("/var/www/msgapp/user")
+const { MessageManager } = require("/var/www/msgapp/message")// eslint-disable-line  no-undef
+const { UserManager } = require("/var/www/msgapp/user")// eslint-disable-line  no-undef
 
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt');// eslint-disable-line  no-undef
 
 let messageManager = new MessageManager()
 let userManager = new UserManager()
@@ -62,13 +62,13 @@ const authenticateUser = async (username, password) => {
     }
 }
 
-let express = require('express')
+let express = require('express')// eslint-disable-line  no-undef
 let app = express()
 app.use(express.json())
 //app.use(express.static('webfiles'))
 
-let jwt = require('jsonwebtoken')
-let cookieParser = require('cookie-parser')
+let jwt = require('jsonwebtoken')// eslint-disable-line  no-undef
+let cookieParser = require('cookie-parser')// eslint-disable-line  no-undef
 app.use(cookieParser())
 
 let appSecret = 'plmcbdgosihesirbadnapdojauryrgsbjaknpas852972164lokodnshgkhonfshdbks'

@@ -1,4 +1,4 @@
-let mysql = require('mysql')
+let mysql = require('mysql')// eslint-disable-line  no-undef
 class Message {
     constructor(message, senderid, receiverid) {
         this.message = message
@@ -95,7 +95,7 @@ class MessageManager {
     }
 }
 
-module.exports = {
+module.exports = {// eslint-disable-line  no-undef
     Message,
     MessageManager
 }

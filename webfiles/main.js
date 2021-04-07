@@ -114,10 +114,10 @@ function loadUsers() {// eslint-disable-line  no-unused-vars
 }
 
 // function to loadAdminScreen - if admin then show admin container
-function loadAdminScreen() {
+function loadAdminScreen() {// eslint-disable-line  no-unused-vars
     let adminContainer = document.getElementsByClassName('admin-user-container')[0]
     adminContainer.innerHTML = ""
-    $.ajax({
+    $.ajax({// eslint-disable-line  no-undef
         url: "/api/adminusers",
         method: "get",
         contentType: "application/json",
@@ -137,19 +137,19 @@ function loadAdminScreen() {
         }
             
         },
-        error: function (j, t, e) {
-            console.log(j, t, e)
+        error: function (j, t, e) {// eslint-disable-line  no-unused-vars
+            console.log(j, t, e)// eslint-disable-line  no-unused-vars
         }
     })
 }
 
 // to view selected user messages
-function adminViewAllMessages(className, username) {
+function adminViewAllMessages(className, username) {// eslint-disable-line  no-unused-vars
     selectedClassName = className
     document.querySelectorAll('.single-user').forEach(e => e.classList.remove('selected'));
     className.classList.add('selected')
     selectedUser = username
-    $.ajax({
+    $.ajax({// eslint-disable-line  no-undef
         url: "/api/adminmessages",
         method: "POST",
         contentType: 'application/json',
@@ -172,20 +172,20 @@ function adminViewAllMessages(className, username) {
                 }
             })
         },
-        error: function (j, t, e) {
+        error: function (j, t, e) {// eslint-disable-line  no-unused-vars
             window.location.href = "/messages.html"
         }
     })
 }
 
-function logout() {
-    $.ajax({
+function logout() {// eslint-disable-line  no-unused-vars
+    $.ajax({// eslint-disable-line  no-undef
         url: "/api/logout",
         method: "POST",
-        success: function(result) {
+        success: function(result) {// eslint-disable-line  no-unused-vars
             window.location.href = '/'
         },
-        error: function(x, t, s) {
+        error: function(x, t, s) {// eslint-disable-line  no-unused-vars
             window.location.href = '/'
         }
     })

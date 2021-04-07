@@ -1,4 +1,4 @@
-let mysql = require('mysql')
+let mysql = require('mysql')// eslint-disable-line  no-undef
 class User {
     constructor(username, password, type) {
         this.username = username
@@ -80,7 +80,7 @@ class UserManager {
     }
 }
 
-module.exports = {
+module.exports = {// eslint-disable-line  no-undef
     User,
     UserManager
 }
