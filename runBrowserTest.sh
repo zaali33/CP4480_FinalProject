@@ -1,5 +1,5 @@
 #!/bin/bash
 
 cd /opt/msgapptest
-npm test
+npm test -- sbrowser.test.js
 
